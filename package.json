@@ -22,7 +22,7 @@
     "schema1:generate": "npx prismix && prisma format && prisma generate",
     "schema1:migrate": "yarn schema1:generate && prisma migrate dev",
     "generate": "yarn schema1:generate",
-    "migrate": "yarn schema1:migrate"
+    "migrate": "npx prisma db push --preview-feature"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
