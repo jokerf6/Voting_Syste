@@ -1,0 +1,32 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id          String @id @default(uuid())
+  name        String
+  DateOfBirth String
+  Gender      gender
+  Email       String
+  Mobile      String
+  Password    String
+  IDNumber    String
+  Role        roles
+  image       String @default("https://res.cloudinary.com/lms07/image/upload/v1645954589/avatar/6214b94ad832b0549b436264_avatar1645954588291.png")
+}
+
+enum roles {
+  CANDIDATE
+  USER
+  ADMIN
+}
+
+enum gender {
+  Male
+  Female
+}
