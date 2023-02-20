@@ -1,23 +1,11 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Res,
-  ValidationPipe,
-  UseGuards,
-} from "@nestjs/common";
+import { Controller, Post, Body, Res, ValidationPipe } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { createUser } from "./dto/create-auth.dto";
-import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { ApiTags } from "@nestjs/swagger";
 import { Response } from "express";
-import { AuthGuard } from "@nestjs/passport";
 import { loginDto } from "./dto/login.dto";
 @ApiTags("auth")
-@Controller("/")
+@Controller("/auth")
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -32,17 +20,5 @@ export class AuthController {
   @Post("/signin")
   signin(@Res() res: Response, @Body(ValidationPipe) loginDto: loginDto) {
     return this.authService.signin(res, loginDto);
-  }
-
-  //  @ApiBearerAuth("Access Token")
-  // @UseGuards(AuthGuard("jwt"))
-  @Get("/cities")
-  getCities(@Res() res: Response) {
-    return this.authService.getCities(res);
-  }
-
-  @Get("/jobs")
-  getJobs(@Res() res: Response) {
-    return this.authService.getJobs(res);
   }
 }

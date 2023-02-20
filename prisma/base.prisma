@@ -8,16 +8,33 @@ generator client {
 }
 
 model User {
-    id          String @id @default(uuid())
-    name        String
-    DateOfBirth String
-    Gender      gender
-    Email       String
-    Mobile      String
-    Password    String
-    IDNumber    String
-    Role        roles
-    image       String @default("https://res.cloudinary.com/lms07/image/upload/v1645954589/avatar/6214b94ad832b0549b436264_avatar1645954588291.png")
+    id            String  @id @default(uuid())
+    name          String
+    Gender        gender
+    Email         String
+    Mobile        String
+    Password      String
+    Role          roles   @default(USER)
+    image         String  @default("https://res.cloudinary.com/lms07/image/upload/v1645954589/avatar/6214b94ad832b0549b436264_avatar1645954588291.png")
+    age           Int
+    emailVerified Boolean @default(false)
+    usersID       usersId @relation(fields: [IDNumber], references: [id])
+    IDNumber      String  @unique
+    Token         Token[]
+}
+
+model Token {
+    id        String   @id @default(uuid())
+    userId    String
+    createdAt DateTime @default(now())
+    valid     Boolean  @default(true)
+    user      User     @relation(fields: [userId], references: [id])
+}
+
+model usersId {
+    id   String  @id @unique
+    used Boolean @default(false)
+    user User?
 }
 
 enum roles {

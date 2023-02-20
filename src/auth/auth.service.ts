@@ -7,6 +7,7 @@ import { loginDto } from "./dto/login.dto";
 import { tokenService } from "./token.service";
 import * as sgMail from "@sendgrid/mail";
 import fetch from "node-fetch";
+import { gender } from "@prisma/client";
 
 @Injectable()
 export class AuthService {
@@ -14,60 +15,55 @@ export class AuthService {
     private prisma: PrismaService,
     private tokenServices: tokenService
   ) {}
+  async calculateAge(birthday) {
+    const ageDifMs = Date.now() - new Date(birthday).getTime();
+    const ageDate = new Date(ageDifMs);
+    const currentDate = new Date().getUTCFullYear();
+    return Math.abs(ageDate.getUTCFullYear() - currentDate);
+  }
   // signip
   async signup(res, createUser: createUser) {
-    const { name, email, password, jobId, cityId } = createUser;
-    const emailExist = await this.prisma.user.findUnique({
+    const { name, Email, Password, IDNumber, Mobile, Gender, DateOfBirth } =
+      createUser;
+    const emailExist = await this.prisma.user.findFirst({
       where: {
-        email,
+        Email,
       },
     });
     if (emailExist)
       return ResponseController.conflict(res, "Email already exist");
 
-    const jobExist = await this.prisma.jobs.findUnique({
+    const idExist = await this.prisma.usersId.findUnique({
       where: {
-        id: jobId,
+        id: IDNumber,
       },
     });
 
-    if (!jobExist) return ResponseController.conflict(res, "Job not exist");
+    if (!idExist) return ResponseController.conflict(res, "id not exist");
+    if (idExist.used)
+      return ResponseController.conflict(res, "id alraedy exist");
 
-    const hashPassword = await bcrypt.hash(password, 8);
+    const hashPassword = await bcrypt.hash(Password, 8);
+    const age = await this.calculateAge(DateOfBirth);
     const newUser = await this.prisma.user.create({
       data: {
         name: name,
-        email: email,
-        password: hashPassword,
-        cityId: cityId,
-        jobId: jobId,
-        aboutme: "",
+        Email: Email,
+        Password: hashPassword,
+        age,
+        Mobile: Mobile,
+        Gender: Gender,
+        IDNumber,
       },
     });
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-    const msg = {
-      to: newUser.email, // Change to your recipient
-      from: "fhakem75@gmail.com", // Change to your verified sender
-      subject: "Sending with SendGrid is Fun",
-      text: "and easy to do anywhere, even with Node.js",
-      html: "<strong>and easy to do anywhere, even with Node.js</strong>",
-    };
-    sgMail
-      .send(msg)
-      .then(() => {
-        console.log("Email sent");
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-    return ResponseController.success(res, "user created Successfully", null);
+    return ResponseController.success(res, "User Created SuccessFully", null);
   }
   // signin
   async signin(res, loginDto: loginDto) {
-    const { email, password, remember } = loginDto;
-    const emailExist = await this.prisma.user.findUnique({
+    const { Email, Password } = loginDto;
+    const emailExist = await this.prisma.user.findFirst({
       where: {
-        email,
+        Email,
       },
     });
     if (!emailExist)
@@ -76,7 +72,7 @@ export class AuthService {
         "IncorrectCredentials",
         "Incorrect email or password"
       );
-    const validPassword = await bcrypt.compare(password, emailExist.password);
+    const validPassword = await bcrypt.compare(Password, emailExist.Password);
     if (!validPassword) {
       return ResponseController.badRequest(
         res,
@@ -91,39 +87,10 @@ export class AuthService {
         "Email not Verified"
       );
     }
-    const refreshToken = await this.tokenServices.createRefresh(
-      emailExist,
-      remember
-    );
-    const accessToken = await this.tokenServices.createAccess(
-      emailExist,
-      refreshToken.refreshId
-    );
+    const accessToken = await this.tokenServices.createAccess(emailExist);
     return ResponseController.success(res, "Login successfully", {
       user: emailExist,
       accessToken,
-      refreshToken: refreshToken.refreshToken,
     });
-  }
-
-  async getCities(res) {
-    await fetch(
-      "https://cdn.jsdelivr.net/npm/country-flag-emoji-json@2.0.0/dist/index.json"
-    )
-      .then((response) => response.json())
-      .then((data) =>
-        ResponseController.success(
-          res,
-          "get Data Successfully",
-          Object.keys(data).map((key) => data[key])
-        )
-      );
-  }
-  async getJobs(res) {
-    const jobs = await this.prisma.jobs.findMany();
-    return ResponseController.success(res, "get Data Successfully", jobs);
-  }
-  async addCities(data) {
-    return Object.keys(data).map((key) => data[key]);
   }
 }
