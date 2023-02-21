@@ -1,9 +1,15 @@
  
 {
     "version": 2,
+    "env":{
+        "DATABASE_URL":"mysql://rootext_0:V123456789_@85.10.205.173:3306/voting_1",
+        "PORT" : "3000",
+        "ACCESS_TOKEN_SECRET" : "Fahdhakem123*",
+        "REFRESH_TOKEN_SECRET" : "Fahdhakem123*"
+    },
     "builds": [
         {
-            "src": "src/main.ts",
+            "src": ".",
             "use": "@vercel/node"
         }
     ],
