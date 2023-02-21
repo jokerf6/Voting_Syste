@@ -21,6 +21,7 @@ model User {
     usersID       usersId @relation(fields: [IDNumber], references: [id])
     IDNumber      String  @unique
     Token         Token[]
+    secret        secret?
 }
 
 model Token {
@@ -29,6 +30,20 @@ model Token {
     createdAt DateTime @default(now())
     valid     Boolean  @default(true)
     user      User     @relation(fields: [userId], references: [id])
+}
+
+model secret {
+    userId    String     @unique
+    url       String     @id
+    code      String
+    type      secretType @default(EMAIL_VERIFICATION)
+    user      User       @relation(fields: [userId], references: [id])
+    createdAt DateTime   @default(now())
+}
+
+enum secretType {
+    EMAIL_VERIFICATION
+    PASSWORD_RESET
 }
 
 model usersId {
