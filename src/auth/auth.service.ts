@@ -154,6 +154,14 @@ export class AuthService {
         emailVerified: true,
       },
     });
+    await this.prisma.usersId.update({
+      where: {
+        id: userExist.user.IDNumber,
+      },
+      data: {
+        used: true,
+      },
+    });
     await this.prisma.secret.deleteMany({
       where: {
         userId: userExist.user.id,

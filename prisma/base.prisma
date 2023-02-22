@@ -19,7 +19,7 @@ model User {
     age           Int
     emailVerified Boolean @default(false)
     usersID       usersId @relation(fields: [IDNumber], references: [id])
-    IDNumber      String  @unique
+    IDNumber      String
     Token         Token[]
     secret        secret?
 }
@@ -49,7 +49,7 @@ enum secretType {
 model usersId {
     id   String  @id @unique
     used Boolean @default(false)
-    user User?
+    user User[]
 }
 
 enum roles {
