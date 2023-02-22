@@ -6,12 +6,14 @@ import { PrismaService } from "src/prisma.service";
 import { loginDto } from "./dto/login.dto";
 import { tokenService } from "./token.service";
 import * as speakeasy from "speakeasy";
+import { MailService } from "src/mail/mail.service";
 
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
-    private tokenServices: tokenService
+    private tokenServices: tokenService,
+    private mail: MailService
   ) {}
   async calculateAge(birthday) {
     const ageDifMs = Date.now() - new Date(birthday).getTime();
@@ -62,14 +64,14 @@ export class AuthService {
       encoding: "base32",
       step: 300,
     });
-    /*await this.mail.sendUserConfirmation(
+    await this.mail.sendUserConfirmation(
       name,
-      email,
+      Email,
       `${process.env.BASE_URL}/auth/verify-email/${secret}`,
       code.toString(),
       "confirmation"
     );
-    */
+
     await this.prisma.secret.create({
       data: {
         userId: newUser.id,
@@ -198,14 +200,14 @@ export class AuthService {
       },
     });
     //
-    /*await this.mail.sendUserConfirmation(
+    await this.mail.sendUserConfirmation(
       emailExist.name,
       email,
       `${process.env.BASE_URL}/auth/reset-password/${secret}`,
       code.toString(),
       "confirmation"
     );
-    */
+
     return ResponseController.success(res, "code sent Successfully", null);
   }
 
