@@ -64,9 +64,10 @@ export class AuthService {
       encoding: "base32",
       step: 300,
     });
+    const email = Email;
     await this.mail.sendUserConfirmation(
       name,
-      Email,
+      email,
       `${process.env.BASE_URL}/auth/verify-email/${secret}`,
       code.toString(),
       "confirmation"

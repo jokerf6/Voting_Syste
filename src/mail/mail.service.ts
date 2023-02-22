@@ -12,6 +12,7 @@ export class MailService {
     code: string,
     template: string
   ) {
+    console.log(email);
     await this.mailerService.sendMail({
       from: "fhakem75@gmail.com",
       to: email,
