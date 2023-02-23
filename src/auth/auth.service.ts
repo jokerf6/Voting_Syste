@@ -5,8 +5,11 @@ import * as bcrypt from "bcrypt";
 import { PrismaService } from "src/prisma.service";
 import { loginDto } from "./dto/login.dto";
 import { tokenService } from "./token.service";
-import * as speakeasy from "speakeasy";
+import fetch from "node-fetch";
 import { MailService } from "src/mail/mail.service";
+import * as speakeasy from "speakeasy";
+import e from "express";
+import { url } from "inspector";
 
 @Injectable()
 export class AuthService {
@@ -15,56 +18,44 @@ export class AuthService {
     private tokenServices: tokenService,
     private mail: MailService
   ) {}
-  async calculateAge(birthday) {
-    const ageDifMs = Date.now() - new Date(birthday).getTime();
-    const ageDate = new Date(ageDifMs);
-    const currentDate = new Date().getUTCFullYear();
-    return Math.abs(ageDate.getUTCFullYear() - currentDate);
-  }
   // signip
   async signup(res, createUser: createUser) {
-    const { name, Email, Password, IDNumber, Mobile, Gender, DateOfBirth } =
-      createUser;
-    const emailExist = await this.prisma.user.findFirst({
+    const { name, email, password, jobId, cityId } = createUser;
+    const emailExist = await this.prisma.user.findUnique({
       where: {
-        Email,
+        email,
       },
     });
     if (emailExist)
       return ResponseController.conflict(res, "Email already exist");
 
-    const idExist = await this.prisma.usersId.findUnique({
+    const jobExist = await this.prisma.jobs.findUnique({
       where: {
-        id: IDNumber,
+        id: jobId,
       },
     });
 
-    if (!idExist) return ResponseController.conflict(res, "id not exist");
-    if (idExist.used)
-      return ResponseController.conflict(res, "id alraedy exist");
+    if (!jobExist) return ResponseController.conflict(res, "Job not exist");
 
-    const hashPassword = await bcrypt.hash(Password, 8);
-    const age = await this.calculateAge(DateOfBirth);
+    const hashPassword = await bcrypt.hash(password, 8);
     const newUser = await this.prisma.user.create({
       data: {
         name: name,
-        Email: Email,
-        Password: hashPassword,
-        age,
-        Mobile: Mobile,
-        Gender: Gender,
-        IDNumber,
+        email: email,
+        password: hashPassword,
+        cityId: cityId,
+        jobId: jobId,
+        aboutme: "",
       },
     });
     const secret = speakeasy.generateSecret().base32;
-    //console.log(secret);
+    console.log(secret);
     const code = speakeasy.totp({
       secret: secret,
       digits: 5,
       encoding: "base32",
       step: 300,
     });
-    const email = Email;
     await this.mail.sendUserConfirmation(
       name,
       email,
@@ -72,7 +63,6 @@ export class AuthService {
       code.toString(),
       "confirmation"
     );
-
     await this.prisma.secret.create({
       data: {
         userId: newUser.id,
@@ -80,15 +70,14 @@ export class AuthService {
         code: code.toString(),
       },
     });
-    return ResponseController.success(res, "User Created SuccessFully", null);
+    return ResponseController.success(res, "user created Successfully", null);
   }
-
-  // signin
+  //ss
   async signin(res, loginDto: loginDto) {
-    const { Email, Password } = loginDto;
-    const emailExist = await this.prisma.user.findFirst({
+    const { email, password, remember } = loginDto;
+    const emailExist = await this.prisma.user.findUnique({
       where: {
-        Email,
+        email,
       },
     });
     if (!emailExist)
@@ -97,7 +86,7 @@ export class AuthService {
         "IncorrectCredentials",
         "Incorrect email or password"
       );
-    const validPassword = await bcrypt.compare(Password, emailExist.Password);
+    const validPassword = await bcrypt.compare(password, emailExist.password);
     if (!validPassword) {
       return ResponseController.badRequest(
         res,
@@ -112,12 +101,42 @@ export class AuthService {
         "Email not Verified"
       );
     }
-    const accessToken = await this.tokenServices.createAccess(emailExist);
+    const refreshToken = await this.tokenServices.createRefresh(
+      emailExist,
+      remember
+    );
+    const accessToken = await this.tokenServices.createAccess(
+      emailExist,
+      refreshToken.refreshId
+    );
     return ResponseController.success(res, "Login successfully", {
       user: emailExist,
       accessToken,
+      refreshToken: refreshToken.refreshToken,
     });
   }
+
+  async getCities(res) {
+    await fetch(
+      "https://cdn.jsdelivr.net/npm/country-flag-emoji-json@2.0.0/dist/index.json"
+    )
+      .then((response) => response.json())
+      .then((data) =>
+        ResponseController.success(
+          res,
+          "get Data Successfully",
+          Object.keys(data).map((key) => data[key])
+        )
+      );
+  }
+  async getJobs(res) {
+    const jobs = await this.prisma.jobs.findMany();
+    return ResponseController.success(res, "get Data Successfully", jobs);
+  }
+  async addCities(data) {
+    return Object.keys(data).map((key) => data[key]);
+  }
+  //g
   async verify(id, res, verifyDto) {
     const { code } = verifyDto;
     let secret = speakeasy.generateSecret().base32;
@@ -156,14 +175,6 @@ export class AuthService {
         emailVerified: true,
       },
     });
-    await this.prisma.usersId.update({
-      where: {
-        id: userExist.user.IDNumber,
-      },
-      data: {
-        used: true,
-      },
-    });
     await this.prisma.secret.deleteMany({
       where: {
         userId: userExist.user.id,
@@ -176,7 +187,7 @@ export class AuthService {
     const { email } = forgetDto;
     const emailExist = await this.prisma.user.findFirst({
       where: {
-        Email: email,
+        email,
       },
     });
     if (!emailExist) {
@@ -217,7 +228,6 @@ export class AuthService {
       code.toString(),
       "confirmation"
     );
-
     return ResponseController.success(res, "code sent Successfully", null);
   }
 
@@ -305,7 +315,7 @@ export class AuthService {
         id: userExist.user.id,
       },
       data: {
-        Password: hashPassword,
+        password: hashPassword,
       },
     });
     return ResponseController.success(
@@ -314,13 +324,15 @@ export class AuthService {
       null
     );
   }
+
   async logout(req, res) {
     const user = req.user.userObject.id;
     const token = req.user.jti;
     const found = await this.prisma.token.findFirst({
-      where: { id: token, userId: user },
+      where: { id: token, userId: user, type: "AccessToken" },
     });
     if (!found) return ResponseController.notFound(res, "token not found");
+    await this.prisma.token.delete({ where: { id: found.refreshId } });
     await this.prisma.token.delete({
       where: { id: found.id },
     });

@@ -1,19 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import {
-  Equals,
-  IsEnum,
-  IsNotEmpty,
-  Matches,
-  MaxLength,
-  MinLength,
-  NotEquals,
-  isNotEmpty,
-} from "class-validator";
-
-export enum gender {
-  Male = "Male",
-  Female = "Female",
-}
+import { IsNotEmpty, Matches, MaxLength, MinLength } from "class-validator";
 
 export class createUser {
   @ApiProperty()
@@ -29,7 +15,7 @@ export class createUser {
   @ApiProperty()
   @IsNotEmpty()
   @Matches(/^[\w\.]+@([\w-]+\.)+[\w-]{2,4}$/, { message: "email not valid" })
-  Email: string;
+  email: string;
 
   @IsNotEmpty()
   @MinLength(8)
@@ -39,24 +25,13 @@ export class createUser {
     message:
       "password must have atleast 8 chars which should be between uppercase characters, lowercase characters, special characters, and numbers",
   })
-  Password: string;
+  password: string;
 
   @ApiProperty()
   @IsNotEmpty()
-  DateOfBirth: Date;
-
-  @ApiProperty()
-  @IsEnum(gender)
-  @Equals(gender[gender.Male] || gender[gender.Female])
-  Gender: gender;
+  jobId: string;
 
   @ApiProperty()
   @IsNotEmpty()
-  @MaxLength(11)
-  @MinLength(11)
-  Mobile: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  IDNumber: string;
+  cityId: string;
 }

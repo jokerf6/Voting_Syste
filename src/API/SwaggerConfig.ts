@@ -18,7 +18,14 @@ export class SwaggerInit {
         },
         "Access Token"
       )
-      .setTitle("Voting_System")
+      .addBearerAuth(
+        {
+          type: "http",
+          scheme: "bearer",
+        },
+        "Refresh Token"
+      )
+      .setTitle("Jobber")
       .setDescription("")
       .setVersion("1.0")
       .build();
