@@ -82,6 +82,7 @@ export class AuthService {
     });
     return ResponseController.success(res, "User Created SuccessFully", null);
   }
+
   // signin
   async signin(res, loginDto: loginDto) {
     const { Email, Password } = loginDto;

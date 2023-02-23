@@ -47,7 +47,7 @@ enum secretType {
 }
 
 model usersId {
-  id   String  @id @unique
+  id   String  @id
   used Boolean @default(false)
   user User[]
 }
