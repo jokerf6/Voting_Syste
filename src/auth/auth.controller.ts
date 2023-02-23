@@ -1,27 +1,25 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
   Res,
   ValidationPipe,
+  Param,
   UseGuards,
+  Get,
   Req,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { createUser } from "./dto/create-auth.dto";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { Response } from "express";
-import { AuthGuard } from "@nestjs/passport";
 import { loginDto } from "./dto/login.dto";
 import { verifyDto } from "./dto/verify.dto";
 import { forgetDto } from "./dto/forget.dto";
 import { changePasswordDto } from "./dto/changePassword.dto";
+import { AuthGuard } from "@nestjs/passport";
 @ApiTags("auth")
-@Controller("auth")
+@Controller("/auth")
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -37,17 +35,6 @@ export class AuthController {
   signin(@Res() res: Response, @Body(ValidationPipe) loginDto: loginDto) {
     return this.authService.signin(res, loginDto);
   }
-
-  @Get("/cities")
-  getCities(@Res() res: Response) {
-    return this.authService.getCities(res);
-  }
-
-  @Get("/jobs")
-  getJobs(@Res() res: Response) {
-    return this.authService.getJobs(res);
-  }
-
   @Post("/verify-email/:id")
   async verifyEmail(
     @Param("id") id: string,
@@ -86,4 +73,3 @@ export class AuthController {
     return this.authService.logout(req, res);
   }
 }
-//

@@ -9,13 +9,14 @@ import {
   NotEquals,
   isNotEmpty,
 } from "class-validator";
+import { min } from "rxjs";
 
 export enum gender {
   Male = "Male",
   Female = "Female",
 }
 
-export class createUser {
+export class editUser {
   @ApiProperty()
   @IsNotEmpty()
   @MinLength(5)
@@ -31,19 +32,9 @@ export class createUser {
   @Matches(/^[\w\.]+@([\w-]+\.)+[\w-]{2,4}$/, { message: "email not valid" })
   Email: string;
 
-  @IsNotEmpty()
-  @MinLength(8)
-  @MaxLength(32)
-  @ApiProperty()
-  @Matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/, {
-    message:
-      "password must have atleast 8 chars which should be between uppercase characters, lowercase characters, special characters, and numbers",
-  })
-  Password: string;
-
   @ApiProperty()
   @IsNotEmpty()
-  DateOfBirth: Date;
+  age: number;
 
   @ApiProperty()
   @IsEnum(gender)
@@ -58,5 +49,5 @@ export class createUser {
 
   @ApiProperty()
   @IsNotEmpty()
-  IDNumber: string;
+  image: string;
 }
