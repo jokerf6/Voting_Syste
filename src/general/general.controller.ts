@@ -9,7 +9,7 @@ export class GeneralController {
   constructor(private readonly generalService: GeneralService) {}
 
   @Post("/feedback")
-  feedBack(@Res() res: Response, @Body(ValidationPipe) feedback: feedback) {
+  feedBack(@Res() res, @Body(ValidationPipe) feedback: feedback) {
     return this.generalService.feedBack(res, feedback);
   }
 }
