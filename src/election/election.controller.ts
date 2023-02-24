@@ -16,7 +16,7 @@ import { ElectionService } from "./election.service";
 import { ApiBearerAuth, ApiProperty, ApiQuery, ApiTags } from "@nestjs/swagger";
 import { AuthGuard } from "@nestjs/passport";
 import { addElection } from "./dto/addElection.dto";
-import { Roles } from "src/auth/guards/roles.guard";
+import { Roles, RolesGuard } from "src/auth/guards/roles.guard";
 import { roles } from "@prisma/client";
 import { addvotes } from "./dto/addVotes.dto";
 
@@ -67,24 +67,13 @@ export class ElectionController {
 
   @ApiBearerAuth("Access Token")
   @UseGuards(AuthGuard("jwt"))
-  @Get("/:electionId")
-  async getElection(
-    @Req() req,
-    @Res() res,
-    @Param("electionId") electionId: string
-  ) {
-    return this.electionService.getElection(req, res, electionId);
-  }
-
-  @ApiBearerAuth("Access Token")
-  @UseGuards(AuthGuard("jwt"))
   @Get("/current")
   async currentElections(@Req() req, @Res() res) {
     return this.electionService.currentElections(req, res);
   }
 
   @ApiBearerAuth("Access Token")
-  @UseGuards(AuthGuard("jwt"))
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
   @Roles(roles.ADMIN)
   @Post("/")
   async addElection(
@@ -96,7 +85,7 @@ export class ElectionController {
   }
 
   @ApiBearerAuth("Access Token")
-  @UseGuards(AuthGuard("jwt"))
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
   @Roles(roles.ADMIN)
   @Patch("/:electionId")
   async editElection(
@@ -109,7 +98,7 @@ export class ElectionController {
   }
 
   @ApiBearerAuth("Access Token")
-  @UseGuards(AuthGuard("jwt"))
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
   @Roles(roles.ADMIN)
   @Delete("/:electionId")
   async deleteElection(
@@ -141,5 +130,16 @@ export class ElectionController {
     @Param("electionId") electionId: string
   ) {
     return this.electionService.addVotes(req, res, addvotes, electionId);
+  }
+
+  @ApiBearerAuth("Access Token")
+  @UseGuards(AuthGuard("jwt"))
+  @Get("/:electionId")
+  async getElection(
+    @Req() req,
+    @Res() res,
+    @Param("electionId") electionId: string
+  ) {
+    return this.electionService.getElection(req, res, electionId);
   }
 }

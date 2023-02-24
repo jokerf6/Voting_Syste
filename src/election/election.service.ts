@@ -49,9 +49,11 @@ export class ElectionService {
         age: exist.electionCandidates[i].candidate.age,
         party: exist.electionCandidates[i].candidate.party,
         education: exist.electionCandidates[i].candidate.education,
-        percent:
-          (exist.electionCandidates[i].candidate._count.voting / 100) *
-          exist._count.voting,
+        percent: (
+          (exist.electionCandidates[i].candidate._count.voting /
+            exist._count.voting) *
+          100
+        ).toFixed(),
       });
     }
     return ResponseController.success(res, "Get data Successfully", candidates);
@@ -138,7 +140,7 @@ export class ElectionService {
         "number of candidates must be greater than 0"
       );
     }
-    await this.prisma.election.create({
+    const election = await this.prisma.election.create({
       data: {
         name,
         start,
@@ -146,7 +148,11 @@ export class ElectionService {
         numberOfCandidates,
       },
     });
-    return ResponseController.success(res, "Add Election Successfully", null);
+    return ResponseController.success(
+      res,
+      "Add Election Successfully",
+      election
+    );
   }
   async editElection(req, res, addElection, electionId) {
     const { name, start, end, numberOfCandidates } = addElection;
@@ -215,7 +221,7 @@ export class ElectionService {
   }
 
   async getVote(req, res, electionId) {
-    const exist = await this.prisma.election.findUnique({
+    const exist = await this.prisma.election.findFirst({
       where: {
         id: electionId,
       },
@@ -231,6 +237,15 @@ export class ElectionService {
       where: {
         electionId: electionId,
         userId: req.user.userObject.id,
+      },
+      select: {
+        id: true,
+        candidate: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
     return ResponseController.success(
@@ -252,6 +267,21 @@ export class ElectionService {
         res,
         "Election not found",
         "Election not found"
+      );
+    }
+    if (exist.numberOfCandidates < candidateId.length) {
+      return ResponseController.badRequest(
+        res,
+        `You can only add ${exist.numberOfCandidates} votes`,
+        `You can only add ${exist.numberOfCandidates} votes`
+      );
+    }
+    const rep = new Set(candidateId);
+    if (rep.size !== candidateId.length) {
+      return ResponseController.badRequest(
+        res,
+        `Dublicate votes`,
+        `Dublicate votes`
       );
     }
     const alreadyVotes = await this.prisma.voting.findFirst({
@@ -287,4 +317,8 @@ export class ElectionService {
     return ResponseController.success(res, "add Vote Successfully", null);
   }
 }
+//
+//
+//
+//
 //

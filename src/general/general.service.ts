@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma.service";
+import { ResponseController } from "src/static/responses";
 
 @Injectable()
 export class GeneralService {
@@ -11,5 +12,10 @@ export class GeneralService {
         feedBackData,
       },
     });
+    return ResponseController.success(res, "add Data Successfully", null);
   }
 }
+//
+//
+//
+//

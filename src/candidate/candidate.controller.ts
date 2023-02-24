@@ -14,7 +14,7 @@ import {
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiProperty, ApiQuery, ApiTags } from "@nestjs/swagger";
 import { AuthGuard } from "@nestjs/passport";
-import { Roles } from "src/auth/guards/roles.guard";
+import { Roles, RolesGuard } from "src/auth/guards/roles.guard";
 import { roles } from "@prisma/client";
 import { query } from "express";
 
@@ -27,7 +27,7 @@ export class CandidateController {
   constructor(private readonly candidateService: CandidateService) {}
 
   @ApiBearerAuth("Access Token")
-  @UseGuards(AuthGuard("jwt"))
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
   @Roles(roles.ADMIN)
   @Post("/:electionId")
   async addCandidate(
@@ -45,7 +45,7 @@ export class CandidateController {
   }
 
   @ApiBearerAuth("Access Token")
-  @UseGuards(AuthGuard("jwt"))
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
   @Roles(roles.ADMIN)
   @Patch("/:candidateId")
   async editCandidate(

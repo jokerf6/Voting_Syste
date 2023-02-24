@@ -20,6 +20,7 @@ export class DashboardService {
         image: true,
       },
     });
+    return ResponseController.success(res, "Get User Data Successfully", user);
   }
   async editUser(req, res, editUser) {
     const { name, Gender, age, Email, Mobile, image } = editUser;
