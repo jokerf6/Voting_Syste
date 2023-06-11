@@ -14,7 +14,7 @@ export class MailService {
   ) {
     console.log(email);
     await this.mailerService.sendMail({
-      from: "sysvoting8@gmail.com",
+      from: "fahd@prefectjob.com",
       to: email,
       // from: '"Support Team" <support@example.com>', // override default from
       subject: "Welcome to Nice App! Confirm your Email",
