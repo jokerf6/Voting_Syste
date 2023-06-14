@@ -188,13 +188,6 @@ export class AuthService {
         "Email not found"
       );
     }
-    if (!emailExist.emailVerified) {
-      return ResponseController.badRequest(
-        res,
-        "Email not verified",
-        "Email not verified"
-      );
-    }
 
     const secret = speakeasy.generateSecret().base32;
     const code = speakeasy.totp({
@@ -220,7 +213,9 @@ export class AuthService {
       "confirmation"
     );
 
-    return ResponseController.success(res, "code sent Successfully", null);
+    return ResponseController.success(res, "code sent Successfully", {
+      secret,
+    });
   }
 
   async resetPassword(id, res, verifyDto) {

@@ -32,25 +32,3 @@ export function ApiFile(
     })
   );
 }
-
-export function ApiAssetFile(fileName = "image", required = false, folder?) {
-  return ApiFile(
-    fileName,
-    required,
-    {
-      fileFilter: fileMimetypeFilter("pdf"),
-    },
-    folder
-  );
-}
-
-export function ApiPdfFile(fileName = "document", required = false, folder?) {
-  return ApiFile(
-    fileName,
-    required,
-    {
-      fileFilter: fileMimetypeFilter("pdf"),
-    },
-    folder
-  );
-}

@@ -36,4 +36,11 @@ export class DashboardController {
   ) {
     return this.dashboardService.editUser(req, res, editUser);
   }
+
+  @ApiBearerAuth("Access Token")
+  @UseGuards(AuthGuard("jwt"))
+  @Patch("/voting")
+  async votingHistory(@Req() req, @Res() res) {
+    return this.dashboardService.votingHistory(req, res);
+  }
 }
