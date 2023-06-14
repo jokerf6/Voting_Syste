@@ -80,7 +80,9 @@ export class AuthService {
         code: code.toString(),
       },
     });
-    return ResponseController.success(res, "User Created SuccessFully", null);
+    return ResponseController.success(res, "User Created SuccessFully", {
+      secret,
+    });
   }
 
   // signin
