@@ -15,7 +15,7 @@ model User {
     Mobile        String
     Password      String
     Role          roles    @default(USER)
-    image         String   @default("https://res.cloudinary.com/lms07/image/upload/v1645954589/avatar/6214b94ad832b0549b436264_avatar1645954588291.png")
+    image         String   @default("https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aHVtYW58ZW58MHx8MHx8fDA%3D&w=1000&q=80")
     age           Int
     emailVerified Boolean  @default(false)
     usersID       usersId  @relation(fields: [IDNumber], references: [id])

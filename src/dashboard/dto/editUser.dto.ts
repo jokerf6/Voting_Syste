@@ -22,9 +22,6 @@ export class editUser {
   @MinLength(5)
   @MaxLength(32)
   @IsNotEmpty()
-  @Matches(/^[a-zA-Z - \s]*$/, {
-    message: "name must be characters only ",
-  })
   name: string;
 
   @ApiProperty()
