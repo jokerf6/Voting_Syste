@@ -26,7 +26,6 @@ export class editUser {
 
   @ApiProperty()
   @IsNotEmpty()
-  @Matches(/^[\w\.]+@([\w-]+\.)+[\w-]{2,4}$/, { message: "email not valid" })
   Email: string;
 
   @ApiProperty()
@@ -34,8 +33,6 @@ export class editUser {
   age: number;
 
   @ApiProperty()
-  @IsEnum(gender)
-  @Equals(gender[gender.Male] || gender[gender.Female])
   Gender: gender;
 
   @ApiProperty()
