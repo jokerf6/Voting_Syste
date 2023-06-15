@@ -16,10 +16,15 @@ export class AuthService {
     private mail: MailService
   ) {}
   async calculateAge(birthday) {
-    const ageDifMs = Date.now() - new Date(birthday).getTime();
-    const ageDate = new Date(ageDifMs);
+    // console.log(birthday);
+    const ageDifMs = new Date(birthday);
+    // console.log(ageDifMs);
+    // const ageDate = new Date(ageDifMs);
+    // console.log(ageDate);
     const currentDate = new Date().getUTCFullYear();
-    return Math.abs(ageDate.getUTCFullYear() - currentDate);
+    // console.log(currentDate);
+    // console.log(Math.abs(ageDate.getUTCFullYear() - currentDate));
+    return Math.abs(ageDifMs.getUTCFullYear() - currentDate);
   }
   // signip
   async signup(res, createUser: createUser) {

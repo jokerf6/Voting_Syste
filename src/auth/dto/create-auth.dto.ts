@@ -43,8 +43,6 @@ export class createUser {
   DateOfBirth: Date;
 
   @ApiProperty()
-  @IsEnum(gender)
-  @Equals(gender[gender.Male] || gender[gender.Female])
   Gender: gender;
 
   @ApiProperty()
