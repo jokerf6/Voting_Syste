@@ -73,6 +73,7 @@ export class DashboardService {
       votings[i]["percent"] = percent;
       votings[i]["rank"] = ix;
     }
+    return ResponseController.success(res, "Get Data Successfully", votings);
   }
   async editUser(req, res, editUser) {
     const { name, Gender, age, Email, Mobile, image } = editUser;

@@ -39,7 +39,7 @@ export class DashboardController {
 
   @ApiBearerAuth("Access Token")
   @UseGuards(AuthGuard("jwt"))
-  @Patch("/voting")
+  @Get("/voting")
   async votingHistory(@Req() req, @Res() res) {
     return this.dashboardService.votingHistory(req, res);
   }
