@@ -39,7 +39,12 @@ export function ApiAssetFile(fileName = "image", required = false, folder?) {
     required,
     {
       fileFilter: fileMimetypeFilter(
-        "png" && "jpg" && "PNG" && "JPG" && "JPEG" && "jpeg"
+        "png",
+        "jpg",
+        "jpeg",
+        "PNG",
+        "JPG",
+        "JPEG"
       ),
     },
     folder

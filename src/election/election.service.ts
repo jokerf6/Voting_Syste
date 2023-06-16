@@ -56,7 +56,10 @@ export class ElectionService {
         ).toFixed(),
       });
     }
-    return ResponseController.success(res, "Get data Successfully", candidates);
+    return ResponseController.success(res, "Get data Successfully", {
+      allowedCandidted: exist.numberOfCandidates,
+      candidates,
+    });
   }
 
   async upcommingElections(req, res, query) {
