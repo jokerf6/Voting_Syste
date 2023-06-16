@@ -38,7 +38,9 @@ export function ApiAssetFile(fileName = "image", required = false, folder?) {
     fileName,
     required,
     {
-      fileFilter: fileMimetypeFilter("pdf"),
+      fileFilter: fileMimetypeFilter(
+        "png" || "jpg" || "PNG" || "JPG" || "JPEG" || "jpeg"
+      ),
     },
     folder
   );
