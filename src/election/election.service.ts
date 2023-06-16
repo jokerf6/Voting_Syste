@@ -86,8 +86,6 @@ export class ElectionService {
       query.take = "3";
     }
     const upComming = await this.prisma.election.findMany({
-      skip: (parseInt(query.skip) - 1) * parseInt(query.take || 3) || 0,
-      take: +query.take || 3,
       where: {
         start: {
           gt: new Date(),
@@ -130,8 +128,6 @@ export class ElectionService {
       },
     });
     const pastElections = await this.prisma.election.findMany({
-      skip: (parseInt(query.skip) - 1) * parseInt(query.take || 3) || 0,
-      take: +query.take || 3,
       where: {
         end: {
           lt: new Date(),
