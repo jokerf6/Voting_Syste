@@ -58,17 +58,23 @@ export class DashboardService {
       let ix = 1;
       let percent = 0;
       for (let j = 0; j < allCandidates.length; j += 1) {
-        if (allCandidates[j].id === votings[i].candidate.id) continue;
+        if (allCandidates[j].candidateId === votings[i].candidate.id) continue;
+        console.log(allCandidates[j].candidateId);
+
         const votes = await this.prisma.voting.count({
           where: {
-            candidateId: allCandidates[j].id,
+            candidateId: allCandidates[j].candidateId,
             electionId: allCandidates[j].electionId,
           },
         });
+        console.log(votes);
         if (votes > candidateVoting) ix += 1;
         percent += votes;
       }
       percent += candidateVoting;
+      console.log(candidateVoting);
+      console.log(percent);
+      console.log((candidateVoting / percent) * 100);
       percent = (candidateVoting / percent) * 100;
       votings[i]["percent"] = percent;
       votings[i]["rank"] = ix;
