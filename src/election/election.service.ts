@@ -235,38 +235,51 @@ export class ElectionService {
   }
 
   async getVote(req, res, electionId) {
-    const exist = await this.prisma.election.findFirst({
+    const election = await this.prisma.election.findFirst({
       where: {
         id: electionId,
       },
-    });
-    if (!exist) {
-      return ResponseController.badRequest(
-        res,
-        "Election not found",
-        "Election not found"
-      );
-    }
-    const votes = await this.prisma.voting.findMany({
-      where: {
-        electionId: electionId,
-        userId: req.user.userObject.id,
-      },
       select: {
         id: true,
+        name: true,
+      },
+    });
+    const candidates = await this.prisma.electionCandidates.findMany({
+      where: {
+        electionId: electionId,
+      },
+      select: {
         candidate: {
           select: {
             id: true,
             name: true,
+            image: true,
           },
         },
       },
     });
-    return ResponseController.success(
-      res,
-      "Get Your Votes Successfully",
-      votes
-    );
+
+    const allVotes = await this.prisma.voting.count({
+      where: {
+        electionId: electionId,
+      },
+    });
+
+    for (let i = 0; i < candidates.length; i += 1) {
+      const votes = await this.prisma.voting.count({
+        where: {
+          candidateId: candidates[i].candidate.id,
+          electionId: electionId,
+        },
+      });
+      candidates[i]["voting"] = votes;
+      candidates[i]["percent"] = (votes / allVotes) * 100;
+    }
+    candidates.sort((a, b) => b["voting"] - a["voting"]);
+    return ResponseController.success(res, "Get Data Successfully", {
+      election: election,
+      candidates: candidates,
+    });
   }
 
   async addVotes(req, res, addvotes, electionId) {

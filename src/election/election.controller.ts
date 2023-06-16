@@ -96,6 +96,16 @@ export class ElectionController {
   ) {
     return this.electionService.editElection(req, res, addElection, electionId);
   }
+  @ApiBearerAuth("Access Token")
+  @UseGuards(AuthGuard("jwt"))
+  @Get("/:electionId/vote")
+  async getVote(
+    @Req() req,
+    @Res() res,
+    @Param("electionId") electionId: string
+  ) {
+    return this.electionService.getVote(req, res, electionId);
+  }
 
   @ApiBearerAuth("Access Token")
   @UseGuards(AuthGuard("jwt"), RolesGuard)
@@ -107,17 +117,6 @@ export class ElectionController {
     @Param("electionId") electionId: string
   ) {
     return this.electionService.deleteElection(req, res, electionId);
-  }
-
-  @ApiBearerAuth("Access Token")
-  @UseGuards(AuthGuard("jwt"))
-  @Get("/vote")
-  async getVote(
-    @Req() req,
-    @Res() res,
-    @Param("electionId") electionId: string
-  ) {
-    return this.electionService.getVote(req, res, electionId);
   }
 
   @ApiBearerAuth("Access Token")
