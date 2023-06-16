@@ -69,7 +69,7 @@ export class DashboardService {
         percent += votes;
       }
       percent += candidateVoting;
-      percent = candidateVoting / percent;
+      percent = (candidateVoting / percent) * 100;
       votings[i]["percent"] = percent;
       votings[i]["rank"] = ix;
     }
