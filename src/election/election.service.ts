@@ -33,6 +33,12 @@ export class ElectionService {
         },
       },
     });
+    const already = await this.prisma.voting.findMany({
+      where: {
+        userId: req.user.userObject.id,
+        electionId: electionId,
+      },
+    });
     if (!exist) {
       return ResponseController.badRequest(
         res,
@@ -49,6 +55,10 @@ export class ElectionService {
         age: exist.electionCandidates[i].candidate.age,
         party: exist.electionCandidates[i].candidate.party,
         education: exist.electionCandidates[i].candidate.education,
+        voted: already.some(
+          (item) =>
+            item.candidateId === exist.electionCandidates[i].candidate.id
+        ),
         percent: (
           (exist.electionCandidates[i].candidate._count.voting /
             exist._count.voting) *
@@ -57,6 +67,7 @@ export class ElectionService {
       });
     }
     return ResponseController.success(res, "Get data Successfully", {
+      alreadyVoted: already.length > 0 ? true : false,
       allowedCandidted: exist.numberOfCandidates,
       candidates,
     });
