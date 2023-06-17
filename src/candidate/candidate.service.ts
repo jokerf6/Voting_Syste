@@ -5,6 +5,18 @@ import { ResponseController } from "src/static/responses";
 @Injectable()
 export class CandidateService {
   constructor(private prisma: PrismaService) {}
+  async getCandidate(req, res, candidateId) {
+    const candidate = await this.prisma.candidate.findUnique({
+      where: {
+        id: candidateId,
+      },
+    });
+    return ResponseController.success(
+      res,
+      "Add Candidate Successfully",
+      candidate
+    );
+  }
   async addCandidate(req, res, createCandidate, electionId) {
     const { name, age, party, education, image } = createCandidate;
     if (age <= 0) {

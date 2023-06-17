@@ -47,6 +47,18 @@ export class CandidateController {
   @ApiBearerAuth("Access Token")
   @UseGuards(AuthGuard("jwt"), RolesGuard)
   @Roles(roles.ADMIN)
+  @Get("/:candidateId")
+  async getCandidate(
+    @Req() req,
+    @Res() res,
+    @Param("candidateId") candidateId: string
+  ) {
+    return this.candidateService.getCandidate(req, res, candidateId);
+  }
+
+  @ApiBearerAuth("Access Token")
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
+  @Roles(roles.ADMIN)
   @Patch("/:candidateId")
   async editCandidate(
     @Req() req,
