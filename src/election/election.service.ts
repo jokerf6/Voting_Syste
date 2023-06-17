@@ -218,6 +218,11 @@ export class ElectionService {
         "Election not found"
       );
     }
+    await this.prisma.electionCandidates.deleteMany({
+      where:{
+      electionId:electionId,
+      }
+    })
     await this.prisma.election.delete({
       where: {
         id: electionId,
