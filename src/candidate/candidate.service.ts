@@ -54,4 +54,18 @@ export class CandidateService {
     });
     return ResponseController.success(res, "edit Candidate Successfully", null);
   }
+
+  async deleteCandidate(req, res, candidateId) {
+    await this.prisma.electionCandidates.deleteMany({
+      where: {
+        candidateId: candidateId,
+      },
+    });
+    await this.prisma.candidate.delete({
+      where: {
+        id: candidateId,
+      },
+    });
+    return ResponseController.success(res, "Delete Data Successfully", null);
+  }
 }

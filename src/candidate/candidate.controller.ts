@@ -61,4 +61,16 @@ export class CandidateController {
       candidateId
     );
   }
+
+  @ApiBearerAuth("Access Token")
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
+  @Roles(roles.ADMIN)
+  @Delete("/:candidateId")
+  async deleteCandidate(
+    @Req() req,
+    @Res() res,
+    @Param("candidateId") candidateId: string
+  ) {
+    return this.candidateService.deleteCandidate(req, res, candidateId);
+  }
 }
