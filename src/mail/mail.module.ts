@@ -12,8 +12,8 @@ import { join } from "path";
         port: 587,
         secure: false,
         auth: {
-          user: "fahd@prefectjob.com",
-          pass: "B77bknada*",
+          user: "no-reply@voting.prefectjob.com",
+          pass: "Fahdhakem123*",
         },
       },
     }),
