@@ -1,111 +1,105 @@
 datasource db {
-    provider = "mysql"
-    url      = env("DATABASE_URL")
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 model User {
-    id            String   @id @default(uuid())
-    name          String
-    Gender        gender
-    Email         String
-    Mobile        String
-    Password      String
-    Role          roles    @default(USER)
-    image         String   @default("https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aHVtYW58ZW58MHx8MHx8fDA%3D&w=1000&q=80")
-    age           Int
-    emailVerified Boolean  @default(false)
-    usersID       usersId  @relation(fields: [IDNumber], references: [id])
-    IDNumber      String
-    Token         Token[]
-    secret        secret?
-    voting        voting[]
+  id            String   @id @default(uuid())
+  name          String
+  Gender        gender
+  Email         String
+  Mobile        String
+  Password      String
+  Role          roles    @default(USER)
+  image         String   @default("https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aHVtYW58ZW58MHx8MHx8fDA%3D&w=1000&q=80")
+  age           Int
+  emailVerified Boolean  @default(false)
+ 
+  Token         Token[]
+  secret        secret?
+  voting        voting[]
 }
 
 model Token {
-    id        String   @id @default(uuid())
-    userId    String
-    createdAt DateTime @default(now())
-    valid     Boolean  @default(true)
-    user      User     @relation(fields: [userId], references: [id])
+  id        String   @id @default(uuid())
+  userId    String
+  createdAt DateTime @default(now())
+  valid     Boolean  @default(true)
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model secret {
-    userId    String     @unique
-    url       String     @id
-    code      String
-    type      secretType @default(EMAIL_VERIFICATION)
-    user      User       @relation(fields: [userId], references: [id])
-    createdAt DateTime   @default(now())
+  userId    String     @unique
+  url       String     @id
+  code      String
+  type      secretType @default(EMAIL_VERIFICATION)
+  user      User       @relation(fields: [userId], references: [id])
+  createdAt DateTime   @default(now())
 }
 
 enum secretType {
-    EMAIL_VERIFICATION
-    PASSWORD_RESET
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
 }
 
-model usersId {
-    id   String  @id
-    used Boolean @default(false)
-    user User[]
-}
 
 model feedback {
-    id           String @id @default(uuid())
-    feedBackData String @db.Text
+  id           String @id @default(uuid())
+  feedBackData String @db.Text
 }
 
 model election {
-    id                 String               @id @default(uuid())
-    name               String
-    start              DateTime
-    end                DateTime
-    numberOfCandidates Int
-    electionCandidates electionCandidates[]
-    voting             voting[]
+  id                 String               @id @default(uuid())
+  name               String
+  start              DateTime
+  end                DateTime
+  numberOfCandidates Int
+  electionCandidates electionCandidates[]
+  voting             voting[]
 }
 
 model candidate {
-    id                 String               @id @default(uuid())
-    name               String
-    age                Int
-    party              String
-    education          String
-    image              String               @default("https://res.cloudinary.com/lms07/image/upload/v1645954589/avatar/6214b94ad832b0549b436264_avatar1645954588291.png")
-    electionCandidates electionCandidates[]
-    voting             voting[]
+  id                 String               @id @default(uuid())
+  name               String
+  age                Int
+  party              String
+  education          String
+  image              String               @default("https://res.cloudinary.com/lms07/image/upload/v1645954589/avatar/6214b94ad832b0549b436264_avatar1645954588291.png")
+  electionCandidates electionCandidates[]
+  voting             voting[]
 }
 
 model electionCandidates {
-    id          String    @id @default(uuid())
-    election    election  @relation(fields: [electionId], references: [id])
-    electionId  String
-    candidate   candidate @relation(fields: [candidateId], references: [id])
-    candidateId String
+  id          String    @id @default(uuid())
+  election    election  @relation(fields: [electionId], references: [id])
+  electionId  String
+  candidate   candidate @relation(fields: [candidateId], references: [id])
+  candidateId String
 }
 
 model voting {
-    id          String    @id @default(uuid())
-    election    election  @relation(fields: [electionId], references: [id])
-    electionId  String
-    candidate   candidate @relation(fields: [candidateId], references: [id])
-    candidateId String
-    user        User      @relation(fields: [userId], references: [id])
-    userId      String
+  id          String    @id @default(uuid())
+  election    election  @relation(fields: [electionId], references: [id])
+  electionId  String
+  candidate   candidate @relation(fields: [candidateId], references: [id])
+  candidateId String
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String
 }
 
 enum roles {
-    CANDIDATE
-    USER
-    ADMIN
+  CANDIDATE
+  USER
+  ADMIN
 }
 
 enum gender {
-    Male
-    Female
+  Male
+  Female
 }
 
 //

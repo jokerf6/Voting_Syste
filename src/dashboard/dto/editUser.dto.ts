@@ -18,9 +18,7 @@ export enum gender {
 
 export class editUser {
   @ApiProperty()
-  @IsNotEmpty()
-  @MinLength(5)
-  @MaxLength(32)
+
   @IsNotEmpty()
   name: string;
 

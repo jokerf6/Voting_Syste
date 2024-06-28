@@ -15,7 +15,6 @@ export class DashboardService {
         Gender: true,
         age: true,
         Email: true,
-        IDNumber: true,
         Mobile: true,
         image: true,
       },

@@ -18,8 +18,7 @@ model User {
   image         String   @default("https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aHVtYW58ZW58MHx8MHx8fDA%3D&w=1000&q=80")
   age           Int
   emailVerified Boolean  @default(false)
-  usersID       usersId  @relation(fields: [IDNumber], references: [id])
-  IDNumber      String
+ 
   Token         Token[]
   secret        secret?
   voting        voting[]
@@ -47,11 +46,6 @@ enum secretType {
   PASSWORD_RESET
 }
 
-model usersId {
-  id   String  @id
-  used Boolean @default(false)
-  user User[]
-}
 
 model feedback {
   id           String @id @default(uuid())

@@ -17,10 +17,7 @@ export enum gender {
 
 export class createUser {
   @ApiProperty()
-  @IsNotEmpty()
-  @MinLength(5)
-  @MaxLength(32)
-  @IsNotEmpty()
+
   name: string;
 
   @ApiProperty()
@@ -51,7 +48,5 @@ export class createUser {
   @MinLength(11)
   Mobile: string;
 
-  @ApiProperty()
-  @IsNotEmpty()
-  IDNumber: string;
+
 }

@@ -28,7 +28,7 @@ export class AuthService {
   }
   // signip
   async signup(res, createUser: createUser) {
-    const { name, Email, Password, IDNumber, Mobile, Gender, DateOfBirth } =
+    const { name, Email, Password, Mobile, Gender, DateOfBirth } =
       createUser;
     const emailExist = await this.prisma.user.findFirst({
       where: {
@@ -38,16 +38,7 @@ export class AuthService {
     if (emailExist)
       return ResponseController.conflict(res, "Email already exist");
 
-    const idExist = await this.prisma.usersId.findUnique({
-      where: {
-        id: IDNumber,
-      },
-    });
-
-    if (!idExist) return ResponseController.conflict(res, "id not exist");
-    if (idExist.used)
-      return ResponseController.conflict(res, "id alraedy exist");
-
+   
     const hashPassword = await bcrypt.hash(Password, 8);
     const age = await this.calculateAge(DateOfBirth);
     const newUser = await this.prisma.user.create({
@@ -58,7 +49,6 @@ export class AuthService {
         age,
         Mobile: Mobile,
         Gender: Gender,
-        IDNumber,
       },
     });
     const secret = speakeasy.generateSecret().base32;
@@ -163,14 +153,7 @@ export class AuthService {
         emailVerified: true,
       },
     });
-    await this.prisma.usersId.update({
-      where: {
-        id: userExist.user.IDNumber,
-      },
-      data: {
-        used: true,
-      },
-    });
+
     await this.prisma.secret.deleteMany({
       where: {
         userId: userExist.user.id,
